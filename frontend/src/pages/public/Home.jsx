@@ -44,7 +44,7 @@ export default function Home() {
           </h1>
 
           <p className="mt-3 sm:mt-4 text-sm sm:text-base text-white/80 max-w-xl">
-            E-Mart is a production-ready OLX-style marketplace: premium listings UI,
+            E-Mart is a production-ready  marketplace: premium listings UI,
             real-time chat, favorites, reports, admin moderation, and analytics.
           </p>
 

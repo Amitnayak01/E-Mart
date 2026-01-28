@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <div className="font-black text-slate-900 text-lg">E-Mart</div>
           <div className="text-slate-500 text-sm">
-            Buy & Sell Marketplace • OLX-style UI • Real-time chat
+            Buy & Sell Marketplace • Real-time chat
           </div>
         </div>
         <div className="text-slate-500 text-sm">
