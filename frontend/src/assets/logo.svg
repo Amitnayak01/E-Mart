@@ -1,0 +1,5 @@
+<svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="6" width="32" height="28" rx="10" fill="#0F172A"></rect>
+  <path d="M12 27V13H16V17H22V13H26V27H22V21H16V27H12Z" fill="#fff"></path>
+  <text x="42" y="26" font-family="Arial" font-size="18" font-weight="700" fill="#0F172A">E-Mart</text>
+</svg>
