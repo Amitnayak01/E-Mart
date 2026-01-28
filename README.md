@@ -1,5 +1,3 @@
-# E-Mart — OLX-like Buy/Sell Marketplace (Full Stack)
-
-This zip contains backend + frontend.
+# E-Mart — Buy/Sell Marketplace (Full Stack)
 
 Run backend then frontend.
