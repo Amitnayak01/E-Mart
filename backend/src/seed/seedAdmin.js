@@ -1,5 +1,5 @@
 import dotenv from "dotenv";dotenv.config();
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { connectDB } from "../config/db.js";
 import User from "../models/User.js";
 const run=async()=>{await connectDB();
