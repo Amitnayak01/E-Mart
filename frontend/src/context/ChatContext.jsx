@@ -36,35 +36,66 @@ function reducer(state, action) {
     case "SET_MESSAGES":
       return { ...state, messages: action.payload };
 
+    // 🔥 MAIN REALTIME ENGINE
     case "ADD_MESSAGE": {
-      if (state.messages.some((m) => m._id === action.payload._id)) return state;
+      const msg = action.payload;
 
-      // 🔥 update lastMessage + unread in conversation list
-      const updatedConvos = state.conversations.map((c) => {
-        if (c._id === action.payload.conversation) {
+      if (state.messages.some((m) => m._id === msg._id)) return state;
+
+      const isActive = state.activeConversation?._id === msg.conversation;
+      const newMessages = isActive ? [...state.messages, msg] : state.messages;
+
+      let convoExists = false;
+
+      let updatedConvos = state.conversations.map((c) => {
+        if (c._id === msg.conversation) {
+          convoExists = true;
           return {
             ...c,
-            lastMessage: action.payload,
-            unreadCount:
-              state.activeConversation?._id === c._id
-                ? 0
-                : (c.unreadCount || 0) + 1
+            lastMessage: msg,
+            lastMessageAt: msg.createdAt,
+            unreadCount: isActive ? 0 : (c.unreadCount || 0) + 1
           };
         }
         return c;
       });
 
+      // 🧠 Insert brand new conversation instantly
+      if (!convoExists && msg.conversationData) {
+        updatedConvos.unshift({
+          ...msg.conversationData,
+          lastMessage: msg,
+          lastMessageAt: msg.createdAt,
+          unreadCount: 1
+        });
+      }
+
+      // Keep latest chat on top
+      updatedConvos.sort(
+        (a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt)
+      );
+
       return {
         ...state,
-        messages: [...state.messages, action.payload],
+        messages: newMessages,
         conversations: updatedConvos
       };
     }
 
+    case "RESET_UNREAD":
+      return {
+        ...state,
+        conversations: state.conversations.map((c) =>
+          c._id === action.payload ? { ...c, unreadCount: 0 } : c
+        )
+      };
+
     case "REMOVE_CONVERSATION":
       return {
         ...state,
-        conversations: state.conversations.filter(c => c._id !== action.payload),
+        conversations: state.conversations.filter(
+          (c) => c._id !== action.payload
+        ),
         activeConversation:
           state.activeConversation?._id === action.payload
             ? null
@@ -89,13 +120,14 @@ export function ChatProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const joinedRoomRef = useRef(null);
 
-  // 🔌 SOCKET
+  // 🔌 SOCKET CONNECTION
   useEffect(() => {
     if (!token) return;
 
-    const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000", {
-      auth: { token }
-    });
+    const socket = io(
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:5000",
+      { auth: { token } }
+    );
 
     dispatch({ type: "SET_SOCKET", payload: socket });
 
@@ -106,7 +138,7 @@ export function ChatProvider({ children }) {
     return () => socket.disconnect();
   }, [token]);
 
-  // 📥 Load Conversations
+  // 📥 LOAD CONVERSATIONS
   const fetchConversations = useCallback(async () => {
     dispatch({ type: "SET_LOADING_CONVOS", payload: true });
     const res = await api.get("/api/chat/conversations");
@@ -118,7 +150,7 @@ export function ChatProvider({ children }) {
     if (token) fetchConversations();
   }, [token, fetchConversations]);
 
-  // 📂 Open Chat Room
+  // 📂 OPEN CHAT
   const setActiveConversation = useCallback(
     async (conversation) => {
       if (!conversation) return;
@@ -134,16 +166,19 @@ export function ChatProvider({ children }) {
       dispatch({ type: "SET_MESSAGES", payload: res.data.data.items });
       dispatch({ type: "SET_LOADING_MESSAGES", payload: false });
 
-      // Join room once
+      // Join socket room once
       if (joinedRoomRef.current !== conversation._id) {
         state.socket?.emit("chat:join", { conversationId: conversation._id });
         joinedRoomRef.current = conversation._id;
       }
+
+      // Reset unread instantly
+      dispatch({ type: "RESET_UNREAD", payload: conversation._id });
     },
     [state.socket, state.activeConversation]
   );
 
-  // ✉ Send Message
+  // ✉ SEND MESSAGE
   const sendMessage = useCallback(
     ({ conversationId, receiverId, text }) => {
       state.socket?.emit("chat:sendMessage", {
@@ -155,25 +190,24 @@ export function ChatProvider({ children }) {
     [state.socket]
   );
 
-  // 🗑 Delete Conversation
+  // 🗑 DELETE CONVERSATION
   const deleteConversation = useCallback(async (id) => {
     await api.delete(`/api/chat/conversations/${id}`);
     dispatch({ type: "REMOVE_CONVERSATION", payload: id });
   }, []);
 
-  // 👤 Get Other User (room name logic)
   const getOtherUser = useCallback(
-    (conversation) => {
-      return conversation?.participants?.find(
+    (conversation) =>
+      conversation?.participants?.find(
         (p) => String(p._id) !== String(user?._id)
-      );
-    },
+      ),
     [user]
   );
 
-  const totalUnread = useMemo(() => {
-    return state.conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
-  }, [state.conversations]);
+  const totalUnread = useMemo(
+    () => state.conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0),
+    [state.conversations]
+  );
 
   const value = useMemo(
     () => ({

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useChat } from "../../context/ChatContext";
 import ConversationList from "../../components/chat/ConversationList";
 import ChatWindow from "../../components/chat/ChatWindow";
@@ -11,11 +12,27 @@ export default function MyMessages() {
     setActiveConversation,
     messages,
     sendMessage,
-    deleteConversation,   // ✅ get from context
+    deleteConversation,
     me
   } = useChat();
 
+  const location = useLocation();
   const [showChat, setShowChat] = useState(false);
+
+  // 🔥 AUTO OPEN CHAT WHEN NAVIGATED FROM PRODUCT PAGE
+  useEffect(() => {
+    const convoId = location.state?.convoId;
+    if (!convoId) return;
+
+    const convo = conversations.find((c) => c._id === convoId);
+    if (convo) {
+      setActiveConversation(convo);
+      setShowChat(true);
+
+      // clear state so it doesn't reopen on back
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, conversations, setActiveConversation]);
 
   const openChat = (c) => {
     setActiveConversation(c);
@@ -31,7 +48,7 @@ export default function MyMessages() {
           conversations={conversations}
           activeId={activeConversation?._id}
           onSelect={openChat}
-          onDelete={deleteConversation} 
+          onDelete={deleteConversation}
           meId={me?._id}
         />
       </div>
