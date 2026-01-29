@@ -18,6 +18,8 @@ import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 import { ApiResponse } from "./utils/ApiResponse.js";
 
 const app = express();
+// 🔥 ADD THIS LINE
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:5173",
