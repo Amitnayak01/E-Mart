@@ -29,15 +29,25 @@ const start = async () => {
     const server = http.createServer(app);
 
     /* ================= SOCKET.IO ================= */
-    const io = new Server(server, {
-      cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
-        methods: ["GET", "POST"],
-        credentials: true
-      },
-      pingTimeout: 20000,
-      pingInterval: 25000
-    });
+     const allowedOrigins = [
+  "http://localhost:5173",
+  "https://e-mart11.netlify.app"
+];
+
+const io = new Server(server, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // Postman etc.
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Socket.IO CORS blocked"));
+    },
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  pingTimeout: 20000,
+  pingInterval: 25000
+});
+
 
     initSocket(io);
 
