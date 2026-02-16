@@ -43,7 +43,7 @@ function toggleFavLocal(productId, makeFav) {
 export default function ProductCard({ product }) {
   const favCtx = useFavorites();
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const apiBase = import.meta.env.VITE_API_BASE_URL || "https://e-mart-gamma-three.vercel.app";
 
   const resolveImg = (url) => {
     if (!url) return "";
