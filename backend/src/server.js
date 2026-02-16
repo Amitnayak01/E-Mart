@@ -31,7 +31,8 @@ const start = async () => {
     /* ================= SOCKET.IO ================= */
      const allowedOrigins = [
   "http://localhost:5173",
-  "https://e-mart11.netlify.app"
+  "https://e-mart11.netlify.app",
+  "https://e-mart-gamma-three.vercel.app"
 ];
 
 const io = new Server(server, {
