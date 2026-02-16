@@ -32,7 +32,7 @@ const start = async () => {
      const allowedOrigins = [
   "http://localhost:5173",
   "https://e-mart11.netlify.app",
-  "http://localhost:5000"
+  "https://e-mart-gamma-three.vercel.app"
 ];
 
 const io = new Server(server, {
