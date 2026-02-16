@@ -57,7 +57,7 @@ export default function ProductDetails() {
   // ✅ share modal
   const [shareOpen, setShareOpen] = useState(false);
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "https://e-mart-gamma-three.vercel.app";
+  const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
   const resolveUrl = (url) => {
     if (!url) return "";

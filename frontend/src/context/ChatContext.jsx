@@ -125,7 +125,7 @@ export function ChatProvider({ children }) {
     if (!token) return;
 
     const socket = io(
-      import.meta.env.VITE_SOCKET_URL || "https://e-mart-gamma-three.vercel.app",
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:5000",
       { auth: { token } }
     );
 
