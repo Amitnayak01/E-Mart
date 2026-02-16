@@ -18,7 +18,7 @@ export default function Signup() {
     setBusy(true);
     try {
       await signup(form);
-      navigate("/dashboard");
+      navigate("/");
     } finally {
       setBusy(false);
     }
