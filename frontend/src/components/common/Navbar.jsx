@@ -111,7 +111,7 @@ export default function Navbar() {
           src={
             user.avatar.url.startsWith("http")
               ? user.avatar.url
-              : `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}${user.avatar.url}`
+              : `${import.meta.env.VITE_API_BASE_URL || "https://e-mart-gamma-three.vercel.app"}${user.avatar.url}`
           }
           alt="avatar"
           className="h-8 w-8 object-cover"

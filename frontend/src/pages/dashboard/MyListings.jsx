@@ -9,7 +9,7 @@ export default function MyListings() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  const apiBase = import.meta.env.VITE_API_BASE_URL || "https://e-mart-gamma-three.vercel.app";
 
   const resolveImg = (url) => {
     if (!url) return "";
